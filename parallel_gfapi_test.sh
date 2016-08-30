@@ -123,7 +123,9 @@ pace() {
 }
 
 # create empty directory tree
-
+echo "removing any previous files"
+#START=$(date +%s)
+START_TIME=$SECONDS
 mkdir -p $MOUNTPOINT/$TOPDIR
 find $MOUNTPOINT/$TOPDIR -maxdepth 1 -name '*.ready' -delete
 rm -f $MOUNTPOINT/$TOPDIR/$GFAPI_STARTING_GUN
@@ -133,11 +135,15 @@ rm -f $MOUNTPOINT/$starting_gun
 ALL_LOGS_DIR=$PGFAPI_LOGDIR
 rm -rf $ALL_LOGS_DIR
 mkdir -p $ALL_LOGS_DIR
-
+#END=$(date +%s)
+#DIFF=$(( $END - $START ))
+ELAPSED_TIME=$(($SECONDS - $START_TIME))
 
 # if write test then remove files from each per-thread directory tree in parallel
 
-echo "removing any previous files"
+echo "remove done"
+echo "It took $ELAPSED_TIME seconds"
+
 if [ "$GFAPI_LOAD" = "seq-wr" -a "$GFAPI_APPEND" = "0" -a "$GFAPI_OVERWRITE" = 0 ] ; then
  thrdcnt=0
  for c in $clients ; do
