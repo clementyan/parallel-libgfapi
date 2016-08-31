@@ -123,9 +123,9 @@ pace() {
 }
 
 # create empty directory tree
-echo "removing any previous files"
+
 #START=$(date +%s)
-START_TIME=$SECONDS
+
 mkdir -p $MOUNTPOINT/$TOPDIR
 find $MOUNTPOINT/$TOPDIR -maxdepth 1 -name '*.ready' -delete
 rm -f $MOUNTPOINT/$TOPDIR/$GFAPI_STARTING_GUN
@@ -137,12 +137,10 @@ rm -rf $ALL_LOGS_DIR
 mkdir -p $ALL_LOGS_DIR
 #END=$(date +%s)
 #DIFF=$(( $END - $START ))
-ELAPSED_TIME=$(($SECONDS - $START_TIME))
+
 
 # if write test then remove files from each per-thread directory tree in parallel
-
-echo "remove done"
-echo "It took $ELAPSED_TIME seconds"
+echo "removing any previous files"
 
 if [ "$GFAPI_LOAD" = "seq-wr" -a "$GFAPI_APPEND" = "0" -a "$GFAPI_OVERWRITE" = 0 ] ; then
  thrdcnt=0
@@ -239,6 +237,8 @@ done
 echo "`date`: clients are all ready"
 
 # start the test and wait for it to end
+echo "start the test and wait for it to end"
+START_TIME=$SECONDS
 
 if [ -z $PGFAPI_EXTERNAL_START ] ; then 
   touch $MOUNTPOINT/$starting_gun
@@ -260,9 +260,9 @@ echo "`date`: clients completed"
 if [ $status != $OK ] ; then
   echo "ERROR: at least one process exited with error status $status"
 fi
-
+ELAPSED_TIME=$(($SECONDS - $START_TIME))
 # report results
-
+echo "It took $ELAPSED_TIME seconds"
 ( echo "elapsed-sec MBps Files-per-sec I/O-rq-per-sec" ; \
   for f in $ALL_LOGS_DIR/*.log ; do \
     awk '/elapsed time/{t=$4}/throughput/{mbs=$3}/file rate/{fps=$4}/IOPS/{iops=$3}END{print t, mbs,fps,iops}' $f ; \
